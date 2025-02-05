@@ -7,6 +7,7 @@ import ecom.application.payload.AddressRequest;
 import ecom.application.repositories.AddressRepository;
 import ecom.application.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,15 +15,14 @@ import java.util.List;
 @Service
 public class AddressServiceImpl implements AddressService {
 
-    private final ModelMapper modelMapper;
-    private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
-    public AddressServiceImpl(ModelMapper modelMapper, AddressRepository addressRepository, UserRepository userRepository) {
-        this.modelMapper = modelMapper;
-        this.addressRepository = addressRepository;
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public AddressRequest createAddress(AddressRequest addressRequest, User user) {
