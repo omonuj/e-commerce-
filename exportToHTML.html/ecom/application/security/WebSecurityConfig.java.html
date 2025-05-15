@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>WebSecurityConfig.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+WebSecurityConfig.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">;</span>
+
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">AppRole</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">Role</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">User</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">RoleRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">UserRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">boot</span><span class="s2">.</span><span class="s1">CommandLineRunner</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">context</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Bean</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">context</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Configuration</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">AuthenticationManager</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">dao</span><span class="s2">.</span><span class="s1">DaoAuthenticationProvider</span><span class="s2">;</span>
+<span class="s3">//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">AuthenticationConfiguration</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">builders</span><span class="s2">.</span><span class="s1">HttpSecurity</span><span class="s2">;</span>
+<span class="s3">//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;</span>
+<span class="s3">//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">EnableWebSecurity</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">configuration</span><span class="s2">.</span><span class="s1">WebSecurityCustomizer</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">SessionCreationPolicy</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">crypto</span><span class="s2">.</span><span class="s1">bcrypt</span><span class="s2">.</span><span class="s1">BCryptPasswordEncoder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">crypto</span><span class="s2">.</span><span class="s1">password</span><span class="s2">.</span><span class="s1">PasswordEncoder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">SecurityFilterChain</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">UsernamePasswordAuthenticationFilter</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">AuthEntryPointJwt</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">AuthTokenFilter</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">services</span><span class="s2">.</span><span class="s1">UserDetailsServiceImpl</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Set</span><span class="s2">;</span>
+
+<span class="s1">@Configuration</span>
+<span class="s1">@EnableWebSecurity</span>
+<span class="s3">//@EnableMethodSecurity</span>
+<span class="s0">public class </span><span class="s1">WebSecurityConfig </span><span class="s2">{</span>
+    <span class="s1">@Autowired</span>
+    <span class="s1">UserDetailsServiceImpl userDetailsService</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthEntryPointJwt unauthorizedHandler</span><span class="s2">;</span>
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">AuthTokenFilter authenticationJwtTokenFilter</span><span class="s2">() {</span>
+        <span class="s0">return new </span><span class="s1">AuthTokenFilter</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">DaoAuthenticationProvider authenticationProvider</span><span class="s2">() {</span>
+        <span class="s1">DaoAuthenticationProvider authProvider </span><span class="s2">= </span><span class="s0">new </span><span class="s1">DaoAuthenticationProvider</span><span class="s2">();</span>
+
+        <span class="s1">authProvider</span><span class="s2">.</span><span class="s1">setUserDetailsService</span><span class="s2">(</span><span class="s1">userDetailsService</span><span class="s2">);</span>
+        <span class="s1">authProvider</span><span class="s2">.</span><span class="s1">setPasswordEncoder</span><span class="s2">(</span><span class="s1">passwordEncoder</span><span class="s2">());</span>
+
+        <span class="s0">return </span><span class="s1">authProvider</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">AuthenticationManager authenticationManager</span><span class="s2">(</span><span class="s1">AuthenticationConfiguration authConfig</span><span class="s2">) </span><span class="s0">throws </span><span class="s1">Exception </span><span class="s2">{</span>
+        <span class="s0">return </span><span class="s1">authConfig</span><span class="s2">.</span><span class="s1">getAuthenticationManager</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">PasswordEncoder passwordEncoder</span><span class="s2">() {</span>
+        <span class="s0">return new </span><span class="s1">BCryptPasswordEncoder</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">SecurityFilterChain filterChain</span><span class="s2">(</span><span class="s1">HttpSecurity http</span><span class="s2">) </span><span class="s0">throws </span><span class="s1">Exception </span><span class="s2">{</span>
+        <span class="s1">http</span><span class="s2">.</span><span class="s1">csrf</span><span class="s2">(</span><span class="s1">csrf -&gt; csrf</span><span class="s2">.</span><span class="s1">disable</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">exceptionHandling</span><span class="s2">(</span><span class="s1">exception -&gt; exception</span><span class="s2">.</span><span class="s1">authenticationEntryPoint</span><span class="s2">(</span><span class="s1">unauthorizedHandler</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">sessionManagement</span><span class="s2">(</span><span class="s1">session -&gt; session</span><span class="s2">.</span><span class="s1">sessionCreationPolicy</span><span class="s2">(</span><span class="s1">SessionCreationPolicy</span><span class="s2">.</span><span class="s1">STATELESS</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">authorizeHttpRequests</span><span class="s2">(</span><span class="s1">auth -&gt;</span>
+                        <span class="s1">auth</span><span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/api/auth/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/v3/api-docs/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/h2-console/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s3">//.requestMatchers(&quot;/api/admin/**&quot;).permitAll()</span>
+                                <span class="s3">//.requestMatchers(&quot;/api/public/**&quot;).permitAll()</span>
+                                <span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/swagger-ui/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/api/test/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/images/**&quot;</span><span class="s2">).</span><span class="s1">permitAll</span><span class="s2">()</span>
+                                <span class="s2">.</span><span class="s1">anyRequest</span><span class="s2">().</span><span class="s1">authenticated</span><span class="s2">()</span>
+                <span class="s2">);</span>
+
+        <span class="s1">http</span><span class="s2">.</span><span class="s1">authenticationProvider</span><span class="s2">(</span><span class="s1">authenticationProvider</span><span class="s2">());</span>
+
+        <span class="s1">http</span><span class="s2">.</span><span class="s1">addFilterBefore</span><span class="s2">(</span><span class="s1">authenticationJwtTokenFilter</span><span class="s2">(), </span><span class="s1">UsernamePasswordAuthenticationFilter</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+
+        <span class="s1">http</span><span class="s2">.</span><span class="s1">headers</span><span class="s2">(</span><span class="s1">headers -&gt; headers</span><span class="s2">.</span><span class="s1">frameOptions</span><span class="s2">(</span>
+                <span class="s1">frameOptions -&gt; frameOptions</span><span class="s2">.</span><span class="s1">sameOrigin</span><span class="s2">()</span>
+        <span class="s2">));</span>
+        <span class="s0">return </span><span class="s1">http</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">WebSecurityCustomizer webSecurityCustomizer</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s2">(</span><span class="s1">web -&gt; web</span><span class="s2">.</span><span class="s1">ignoring</span><span class="s2">().</span><span class="s1">requestMatchers</span><span class="s2">(</span><span class="s4">&quot;/v2/api-docs&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;/configuration/ui&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;/swagger-resources/**&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;/configuration/security&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;/swagger-ui.html&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;/webjars/**&quot;</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+
+    <span class="s3">//Jonah remember to delete this, is just to test the application entities</span>
+
+    <span class="s1">@Bean</span>
+    <span class="s0">public </span><span class="s1">CommandLineRunner initData</span><span class="s2">(</span><span class="s1">RoleRepository roleRepository</span><span class="s2">, </span><span class="s1">UserRepository userRepository</span><span class="s2">, </span><span class="s1">PasswordEncoder passwordEncoder</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">args -&gt; </span><span class="s2">{</span>
+            <span class="s3">// Retrieve or create roles</span>
+            <span class="s1">Role userRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_USER</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">orElseGet</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+                        <span class="s1">Role newUserRole </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Role</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_USER</span><span class="s2">);</span>
+                        <span class="s0">return </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">newUserRole</span><span class="s2">);</span>
+                    <span class="s2">});</span>
+
+            <span class="s1">Role sellerRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_SELLER</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">orElseGet</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+                        <span class="s1">Role newSellerRole </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Role</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_SELLER</span><span class="s2">);</span>
+                        <span class="s0">return </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">newSellerRole</span><span class="s2">);</span>
+                    <span class="s2">});</span>
+
+            <span class="s1">Role adminRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_ADMIN</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">orElseGet</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+                        <span class="s1">Role newAdminRole </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Role</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_ADMIN</span><span class="s2">);</span>
+                        <span class="s0">return </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">newAdminRole</span><span class="s2">);</span>
+                    <span class="s2">});</span>
+
+            <span class="s1">Set</span><span class="s2">&lt;</span><span class="s1">Role</span><span class="s2">&gt; </span><span class="s1">userRoles </span><span class="s2">= </span><span class="s1">Set</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span><span class="s1">userRole</span><span class="s2">);</span>
+            <span class="s1">Set</span><span class="s2">&lt;</span><span class="s1">Role</span><span class="s2">&gt; </span><span class="s1">sellerRoles </span><span class="s2">= </span><span class="s1">Set</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span><span class="s1">sellerRole</span><span class="s2">);</span>
+            <span class="s1">Set</span><span class="s2">&lt;</span><span class="s1">Role</span><span class="s2">&gt; </span><span class="s1">adminRoles </span><span class="s2">= </span><span class="s1">Set</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span><span class="s1">userRole</span><span class="s2">, </span><span class="s1">sellerRole</span><span class="s2">, </span><span class="s1">adminRole</span><span class="s2">);</span>
+
+
+            <span class="s3">// Create users if not already present</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">userRepository</span><span class="s2">.</span><span class="s1">existsByUserName</span><span class="s2">(</span><span class="s4">&quot;user1&quot;</span><span class="s2">)) {</span>
+                <span class="s1">User user1 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">User</span><span class="s2">(</span><span class="s4">&quot;user1&quot;</span><span class="s2">, </span><span class="s4">&quot;user1@example.com&quot;</span><span class="s2">, </span><span class="s1">passwordEncoder</span><span class="s2">.</span><span class="s1">encode</span><span class="s2">(</span><span class="s4">&quot;password1&quot;</span><span class="s2">));</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">user1</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">userRepository</span><span class="s2">.</span><span class="s1">existsByUserName</span><span class="s2">(</span><span class="s4">&quot;seller1&quot;</span><span class="s2">)) {</span>
+                <span class="s1">User seller1 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">User</span><span class="s2">(</span><span class="s4">&quot;seller1&quot;</span><span class="s2">, </span><span class="s4">&quot;seller1@example.com&quot;</span><span class="s2">, </span><span class="s1">passwordEncoder</span><span class="s2">.</span><span class="s1">encode</span><span class="s2">(</span><span class="s4">&quot;password2&quot;</span><span class="s2">));</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">seller1</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">userRepository</span><span class="s2">.</span><span class="s1">existsByUserName</span><span class="s2">(</span><span class="s4">&quot;admin&quot;</span><span class="s2">)) {</span>
+                <span class="s1">User admin </span><span class="s2">= </span><span class="s0">new </span><span class="s1">User</span><span class="s2">(</span><span class="s4">&quot;admin&quot;</span><span class="s2">, </span><span class="s4">&quot;admin@example.com&quot;</span><span class="s2">, </span><span class="s1">passwordEncoder</span><span class="s2">.</span><span class="s1">encode</span><span class="s2">(</span><span class="s4">&quot;adminPass&quot;</span><span class="s2">));</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">admin</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s3">// Update roles for existing users</span>
+            <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">findByUserName</span><span class="s2">(</span><span class="s4">&quot;user1&quot;</span><span class="s2">).</span><span class="s1">ifPresent</span><span class="s2">(</span><span class="s1">user -&gt; </span><span class="s2">{</span>
+                <span class="s1">user</span><span class="s2">.</span><span class="s1">setRoles</span><span class="s2">(</span><span class="s1">userRoles</span><span class="s2">);</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">user</span><span class="s2">);</span>
+            <span class="s2">});</span>
+
+            <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">findByUserName</span><span class="s2">(</span><span class="s4">&quot;seller1&quot;</span><span class="s2">).</span><span class="s1">ifPresent</span><span class="s2">(</span><span class="s1">seller -&gt; </span><span class="s2">{</span>
+                <span class="s1">seller</span><span class="s2">.</span><span class="s1">setRoles</span><span class="s2">(</span><span class="s1">sellerRoles</span><span class="s2">);</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">seller</span><span class="s2">);</span>
+            <span class="s2">});</span>
+
+            <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">findByUserName</span><span class="s2">(</span><span class="s4">&quot;admin&quot;</span><span class="s2">).</span><span class="s1">ifPresent</span><span class="s2">(</span><span class="s1">admin -&gt; </span><span class="s2">{</span>
+                <span class="s1">admin</span><span class="s2">.</span><span class="s1">setRoles</span><span class="s2">(</span><span class="s1">adminRoles</span><span class="s2">);</span>
+                <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">admin</span><span class="s2">);</span>
+            <span class="s2">});</span>
+        <span class="s2">};</span>
+    <span class="s2">}</span>
+
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

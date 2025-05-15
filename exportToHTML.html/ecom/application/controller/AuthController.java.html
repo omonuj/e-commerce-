@@ -1,0 +1,186 @@
+<html>
+<head>
+<title>AuthController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+AuthController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">AppRole</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">Role</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">User</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">RoleRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">UserRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">request</span><span class="s2">.</span><span class="s1">SignupRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">response</span><span class="s2">.</span><span class="s1">MessageResponse</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">response</span><span class="s2">.</span><span class="s1">UserInfoResponse</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">JwtUtils</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">request</span><span class="s2">.</span><span class="s1">LoginRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">services</span><span class="s2">.</span><span class="s1">UserDetailsImpl</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">jakarta</span><span class="s2">.</span><span class="s1">validation</span><span class="s2">.</span><span class="s1">Valid</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpHeaders</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpStatus</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseCookie</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseEntity</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">AuthenticationManager</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">UsernamePasswordAuthenticationToken</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">Authentication</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">AuthenticationException</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">context</span><span class="s2">.</span><span class="s1">SecurityContextHolder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">crypto</span><span class="s2">.</span><span class="s1">password</span><span class="s2">.</span><span class="s1">PasswordEncoder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.*;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">.</span><span class="s1">Collectors</span><span class="s2">;</span>
+
+<span class="s1">@RestController</span>
+<span class="s1">@RequestMapping</span><span class="s2">(</span><span class="s3">&quot;/api/auth&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">AuthController </span><span class="s2">{</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">RoleRepository roleRepository</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">UserRepository userRepository</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">PasswordEncoder encoder</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">JwtUtils jwtUtils</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthenticationManager authenticationManager</span><span class="s2">;</span>
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s3">&quot;/signin&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;?&gt; </span><span class="s1">authenticateUser</span><span class="s2">(</span><span class="s1">@RequestBody LoginRequest loginRequest</span><span class="s2">) {</span>
+        <span class="s1">Authentication authentication</span><span class="s2">;</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">authentication </span><span class="s2">= </span><span class="s1">authenticationManager</span>
+                    <span class="s2">.</span><span class="s1">authenticate</span><span class="s2">(</span><span class="s0">new </span><span class="s1">UsernamePasswordAuthenticationToken</span><span class="s2">(</span><span class="s1">loginRequest</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">(), </span><span class="s1">loginRequest</span><span class="s2">.</span><span class="s1">getPassword</span><span class="s2">()));</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">AuthenticationException exception</span><span class="s2">) {</span>
+            <span class="s1">Map</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">, </span><span class="s1">Object</span><span class="s2">&gt; </span><span class="s1">map </span><span class="s2">= </span><span class="s0">new </span><span class="s1">HashMap</span><span class="s2">&lt;&gt;();</span>
+            <span class="s1">map</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s3">&quot;message&quot;</span><span class="s2">, </span><span class="s3">&quot;Bad credentials&quot;</span><span class="s2">);</span>
+            <span class="s1">map</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s3">&quot;status&quot;</span><span class="s2">, </span><span class="s0">false</span><span class="s2">);</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">Object</span><span class="s2">&gt;(</span><span class="s1">map</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">NOT_FOUND</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">SecurityContextHolder</span><span class="s2">.</span><span class="s1">getContext</span><span class="s2">().</span><span class="s1">setAuthentication</span><span class="s2">(</span><span class="s1">authentication</span><span class="s2">);</span>
+
+        <span class="s1">UserDetailsImpl userDetails </span><span class="s2">= (</span><span class="s1">UserDetailsImpl</span><span class="s2">) </span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">getPrincipal</span><span class="s2">();</span>
+
+        <span class="s1">ResponseCookie jwtCookie </span><span class="s2">= </span><span class="s1">jwtUtils</span><span class="s2">.</span><span class="s1">generateJwtCookie</span><span class="s2">(</span><span class="s1">userDetails</span><span class="s2">);</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles </span><span class="s2">= </span><span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getAuthorities</span><span class="s2">().</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item -&gt; item</span><span class="s2">.</span><span class="s1">getAuthority</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">collect</span><span class="s2">(</span><span class="s1">Collectors</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">());</span>
+
+        <span class="s1">UserInfoResponse response </span><span class="s2">= </span><span class="s0">new </span><span class="s1">UserInfoResponse</span><span class="s2">(</span><span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">(),</span>
+                <span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">(), </span><span class="s1">roles</span><span class="s2">);</span>
+
+        <span class="s0">return </span><span class="s1">ResponseEntity</span><span class="s2">.</span><span class="s1">ok</span><span class="s2">().</span><span class="s1">header</span><span class="s2">(</span><span class="s1">HttpHeaders</span><span class="s2">.</span><span class="s1">SET_COOKIE</span><span class="s2">,</span>
+                <span class="s1">jwtCookie</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">()).</span><span class="s1">body</span><span class="s2">(</span><span class="s1">response</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s3">&quot;/signup&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;?&gt; </span><span class="s1">registerUser</span><span class="s2">(</span><span class="s1">@Valid @RequestBody SignupRequest signUpRequest</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">userRepository</span><span class="s2">.</span><span class="s1">existsByUserName</span><span class="s2">(</span><span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">())) {</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity</span><span class="s2">.</span><span class="s1">badRequest</span><span class="s2">().</span><span class="s1">body</span><span class="s2">(</span><span class="s0">new </span><span class="s1">MessageResponse</span><span class="s2">(</span><span class="s3">&quot;Error: Username is already taken!&quot;</span><span class="s2">));</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">userRepository</span><span class="s2">.</span><span class="s1">existsByEmail</span><span class="s2">(</span><span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getEmail</span><span class="s2">())) {</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity</span><span class="s2">.</span><span class="s1">badRequest</span><span class="s2">().</span><span class="s1">body</span><span class="s2">(</span><span class="s0">new </span><span class="s1">MessageResponse</span><span class="s2">(</span><span class="s3">&quot;Error: Email is already in use!&quot;</span><span class="s2">));</span>
+        <span class="s2">}</span>
+
+        <span class="s4">// Create new user's account</span>
+        <span class="s1">User user </span><span class="s2">= </span><span class="s0">new </span><span class="s1">User</span><span class="s2">(</span><span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">(),</span>
+                <span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getEmail</span><span class="s2">(),</span>
+                <span class="s1">encoder</span><span class="s2">.</span><span class="s1">encode</span><span class="s2">(</span><span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getPassword</span><span class="s2">()));</span>
+
+        <span class="s1">Set</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">strRoles </span><span class="s2">= </span><span class="s1">signUpRequest</span><span class="s2">.</span><span class="s1">getRole</span><span class="s2">();</span>
+        <span class="s1">Set</span><span class="s2">&lt;</span><span class="s1">Role</span><span class="s2">&gt; </span><span class="s1">roles </span><span class="s2">= </span><span class="s0">new </span><span class="s1">HashSet</span><span class="s2">&lt;&gt;();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">strRoles </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">Role userRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_USER</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s3">&quot;Error: Role is not found.&quot;</span><span class="s2">));</span>
+            <span class="s1">roles</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">userRole</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">strRoles</span><span class="s2">.</span><span class="s1">forEach</span><span class="s2">(</span><span class="s1">role -&gt; </span><span class="s2">{</span>
+                <span class="s0">switch </span><span class="s2">(</span><span class="s1">role</span><span class="s2">) {</span>
+                    <span class="s0">case </span><span class="s3">&quot;admin&quot;</span><span class="s2">:</span>
+                        <span class="s1">Role adminRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_ADMIN</span><span class="s2">)</span>
+                                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s3">&quot;Error: Role is not found.&quot;</span><span class="s2">));</span>
+                        <span class="s1">roles</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">adminRole</span><span class="s2">);</span>
+
+                        <span class="s0">break</span><span class="s2">;</span>
+                    <span class="s0">case </span><span class="s3">&quot;seller&quot;</span><span class="s2">:</span>
+                        <span class="s1">Role modRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_SELLER</span><span class="s2">)</span>
+                                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s3">&quot;Error: Role is not found.&quot;</span><span class="s2">));</span>
+                        <span class="s1">roles</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">modRole</span><span class="s2">);</span>
+
+                        <span class="s0">break</span><span class="s2">;</span>
+                    <span class="s0">default</span><span class="s2">:</span>
+                        <span class="s1">Role userRole </span><span class="s2">= </span><span class="s1">roleRepository</span><span class="s2">.</span><span class="s1">findByRoleName</span><span class="s2">(</span><span class="s1">AppRole</span><span class="s2">.</span><span class="s1">ROLE_USER</span><span class="s2">)</span>
+                                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s3">&quot;Error: Role is not found.&quot;</span><span class="s2">));</span>
+                        <span class="s1">roles</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">userRole</span><span class="s2">);</span>
+                <span class="s2">}</span>
+            <span class="s2">});</span>
+        <span class="s2">}</span>
+
+        <span class="s1">user</span><span class="s2">.</span><span class="s1">setRoles</span><span class="s2">(</span><span class="s1">roles</span><span class="s2">);</span>
+        <span class="s1">userRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">user</span><span class="s2">);</span>
+
+        <span class="s0">return </span><span class="s1">ResponseEntity</span><span class="s2">.</span><span class="s1">ok</span><span class="s2">(</span><span class="s0">new </span><span class="s1">MessageResponse</span><span class="s2">(</span><span class="s3">&quot;User registered successfully!&quot;</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/userName&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">String currentUserName</span><span class="s2">(</span><span class="s1">Authentication authentication</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">authentication </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">)</span>
+            <span class="s0">return </span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">();</span>
+        <span class="s0">else</span>
+            <span class="s0">return </span><span class="s3">&quot;&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/user&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;?&gt; </span><span class="s1">getUserDetails</span><span class="s2">(</span><span class="s1">Authentication authentication</span><span class="s2">) {</span>
+        <span class="s1">UserDetailsImpl userDetails </span><span class="s2">= (</span><span class="s1">UserDetailsImpl</span><span class="s2">) </span><span class="s1">authentication</span><span class="s2">.</span><span class="s1">getPrincipal</span><span class="s2">();</span>
+
+
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles </span><span class="s2">= </span><span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getAuthorities</span><span class="s2">().</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item -&gt; item</span><span class="s2">.</span><span class="s1">getAuthority</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">collect</span><span class="s2">(</span><span class="s1">Collectors</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">());</span>
+
+        <span class="s1">UserInfoResponse response </span><span class="s2">= </span><span class="s0">new </span><span class="s1">UserInfoResponse</span><span class="s2">(</span><span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">(),</span>
+                <span class="s1">userDetails</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">(), </span><span class="s1">roles</span><span class="s2">);</span>
+
+        <span class="s0">return </span><span class="s1">ResponseEntity</span><span class="s2">.</span><span class="s1">ok</span><span class="s2">().</span><span class="s1">body</span><span class="s2">(</span><span class="s1">response</span><span class="s2">);</span>
+
+    <span class="s2">}</span>
+
+<span class="s4">//</span>
+<span class="s4">//    @PostMapping(&quot;/signout&quot;)</span>
+<span class="s4">//    public ResponseEntity&lt;?&gt; signoutUser(){</span>
+<span class="s4">//</span>
+<span class="s4">//    }</span>
+<span class="s2">}</span>
+
+</pre>
+</body>
+</html>

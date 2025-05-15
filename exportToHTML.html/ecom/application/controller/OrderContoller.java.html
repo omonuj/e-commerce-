@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>OrderContoller.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+OrderContoller.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">OrderResquest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">RequestedOrderRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">service</span><span class="s2">.</span><span class="s1">OrderService</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">AuthUtil</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpStatus</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseEntity</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.*;</span>
+
+
+<span class="s1">@RestController</span>
+<span class="s1">@RequestMapping</span><span class="s2">(</span><span class="s3">&quot;/api&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">OrderContoller </span><span class="s2">{</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">OrderService orderService</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthUtil authUtil</span><span class="s2">;</span>
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s3">&quot;/order/users/payments/{paymentMethod}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">OrderResquest</span><span class="s2">&gt; </span><span class="s1">orderProducts</span><span class="s2">(</span><span class="s1">@PathVariable String paymentMethod</span><span class="s2">,</span>
+                                                       <span class="s1">@RequestBody RequestedOrderRequest requestedOrderRequest</span><span class="s2">) {</span>
+        <span class="s1">String emailId </span><span class="s2">= </span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInEmail</span><span class="s2">();</span>
+        <span class="s1">OrderResquest orderResquest </span><span class="s2">= </span><span class="s1">orderService</span><span class="s2">.</span><span class="s1">placeOrder</span><span class="s2">(</span>
+                <span class="s1">emailId</span><span class="s2">,</span>
+                <span class="s1">requestedOrderRequest</span><span class="s2">.</span><span class="s1">getAddressId</span><span class="s2">(),</span>
+                <span class="s1">paymentMethod</span><span class="s2">,</span>
+                <span class="s1">requestedOrderRequest</span><span class="s2">.</span><span class="s1">getPgName</span><span class="s2">(),</span>
+                <span class="s1">requestedOrderRequest</span><span class="s2">.</span><span class="s1">getPgPaymentId</span><span class="s2">(),</span>
+                <span class="s1">requestedOrderRequest</span><span class="s2">.</span><span class="s1">getPgStatus</span><span class="s2">(),</span>
+                <span class="s1">requestedOrderRequest</span><span class="s2">.</span><span class="s1">getPgResponseMessage</span><span class="s2">()</span>
+        <span class="s2">);</span>
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">orderResquest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">CREATED</span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

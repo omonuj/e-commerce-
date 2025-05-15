@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>JwtUtils.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+JwtUtils.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">jwt</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">services</span><span class="s2">.</span><span class="s1">UserDetailsImpl</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">io</span><span class="s2">.</span><span class="s1">jsonwebtoken</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">io</span><span class="s2">.</span><span class="s1">jsonwebtoken</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">Decoders</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">io</span><span class="s2">.</span><span class="s1">jsonwebtoken</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">Keys</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">jakarta</span><span class="s2">.</span><span class="s1">servlet</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">Cookie</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">jakarta</span><span class="s2">.</span><span class="s1">servlet</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpServletRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">slf4j</span><span class="s2">.</span><span class="s1">Logger</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">slf4j</span><span class="s2">.</span><span class="s1">LoggerFactory</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Value</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseCookie</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">core</span><span class="s2">.</span><span class="s1">userdetails</span><span class="s2">.</span><span class="s1">UserDetails</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">stereotype</span><span class="s2">.</span><span class="s1">Component</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">WebUtils</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">crypto</span><span class="s2">.</span><span class="s1">SecretKey</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">Key</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Date</span><span class="s2">;</span>
+
+<span class="s1">@Component</span>
+<span class="s0">public class </span><span class="s1">JwtUtils </span><span class="s2">{</span>
+    <span class="s0">private static final </span><span class="s1">Logger logger </span><span class="s2">= </span><span class="s1">LoggerFactory</span><span class="s2">.</span><span class="s1">getLogger</span><span class="s2">(</span><span class="s1">JwtUtils</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+
+    <span class="s1">@Value</span><span class="s2">(</span><span class="s3">&quot;${spring.app.jwtSecret}&quot;</span><span class="s2">)</span>
+    <span class="s0">private </span><span class="s1">String jwtSecret</span><span class="s2">;</span>
+
+    <span class="s1">@Value</span><span class="s2">(</span><span class="s3">&quot;${spring.app.jwtExpirationMs}&quot;</span><span class="s2">)</span>
+    <span class="s0">private int </span><span class="s1">jwtExpirationMs</span><span class="s2">;</span>
+
+    <span class="s1">@Value</span><span class="s2">(</span><span class="s3">&quot;${spring.ecom.app.jwtCookieName}&quot;</span><span class="s2">)</span>
+    <span class="s0">private </span><span class="s1">String jwtCookie</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">String getJwtFromCookies</span><span class="s2">(</span><span class="s1">HttpServletRequest request</span><span class="s2">) {</span>
+        <span class="s1">Cookie cookie </span><span class="s2">= </span><span class="s1">WebUtils</span><span class="s2">.</span><span class="s1">getCookie</span><span class="s2">(</span><span class="s1">request</span><span class="s2">, </span><span class="s1">jwtCookie</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cookie </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s3">&quot;COOKIE: &quot; </span><span class="s2">+ </span><span class="s1">cookie</span><span class="s2">.</span><span class="s1">getValue</span><span class="s2">());</span>
+            <span class="s0">return </span><span class="s1">cookie</span><span class="s2">.</span><span class="s1">getValue</span><span class="s2">();</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return null</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">ResponseCookie generateJwtCookie</span><span class="s2">(</span><span class="s1">UserDetailsImpl userPrincipal</span><span class="s2">) {</span>
+        <span class="s1">String jwt </span><span class="s2">= </span><span class="s1">generateTokenFromUsername</span><span class="s2">(</span><span class="s1">userPrincipal</span><span class="s2">.</span><span class="s1">getUsername</span><span class="s2">());</span>
+        <span class="s1">ResponseCookie cookie </span><span class="s2">= </span><span class="s1">ResponseCookie</span><span class="s2">.</span><span class="s1">from</span><span class="s2">(</span><span class="s1">jwtCookie</span><span class="s2">, </span><span class="s1">jwt</span><span class="s2">).</span><span class="s1">path</span><span class="s2">(</span><span class="s3">&quot;/api&quot;</span><span class="s2">).</span><span class="s1">maxAge</span><span class="s2">(</span><span class="s4">24 </span><span class="s2">* </span><span class="s4">60 </span><span class="s2">* </span><span class="s4">60</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">httpOnly</span><span class="s2">(</span><span class="s0">false</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s0">return </span><span class="s1">cookie</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String generateTokenFromUsername</span><span class="s2">(</span><span class="s1">String username</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">Jwts</span><span class="s2">.</span><span class="s1">builder</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">subject</span><span class="s2">(</span><span class="s1">username</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">issuedAt</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Date</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">expiration</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Date</span><span class="s2">((</span><span class="s0">new </span><span class="s1">Date</span><span class="s2">()).</span><span class="s1">getTime</span><span class="s2">() + </span><span class="s1">jwtExpirationMs</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">signWith</span><span class="s2">(</span><span class="s1">key</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">compact</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String getUserNameFromJwtToken</span><span class="s2">(</span><span class="s1">String token</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">Jwts</span><span class="s2">.</span><span class="s1">parser</span><span class="s2">()</span>
+                        <span class="s2">.</span><span class="s1">verifyWith</span><span class="s2">((</span><span class="s1">SecretKey</span><span class="s2">) </span><span class="s1">key</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">build</span><span class="s2">().</span><span class="s1">parseSignedClaims</span><span class="s2">(</span><span class="s1">token</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">getPayload</span><span class="s2">().</span><span class="s1">getSubject</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private </span><span class="s1">Key key</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">Keys</span><span class="s2">.</span><span class="s1">hmacShaKeyFor</span><span class="s2">(</span><span class="s1">Decoders</span><span class="s2">.</span><span class="s1">BASE64</span><span class="s2">.</span><span class="s1">decode</span><span class="s2">(</span><span class="s1">jwtSecret</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">validateJwtToken</span><span class="s2">(</span><span class="s1">String authToken</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s3">&quot;Validate&quot;</span><span class="s2">);</span>
+            <span class="s1">Jwts</span><span class="s2">.</span><span class="s1">parser</span><span class="s2">().</span><span class="s1">verifyWith</span><span class="s2">((</span><span class="s1">SecretKey</span><span class="s2">) </span><span class="s1">key</span><span class="s2">()).</span><span class="s1">build</span><span class="s2">().</span><span class="s1">parseSignedClaims</span><span class="s2">(</span><span class="s1">authToken</span><span class="s2">);</span>
+            <span class="s0">return true</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">MalformedJwtException e</span><span class="s2">) {</span>
+            <span class="s1">logger</span><span class="s2">.</span><span class="s1">error</span><span class="s2">(</span><span class="s3">&quot;Invalid JWT token: {}&quot;</span><span class="s2">, </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">ExpiredJwtException e</span><span class="s2">) {</span>
+            <span class="s1">logger</span><span class="s2">.</span><span class="s1">error</span><span class="s2">(</span><span class="s3">&quot;JWT token is expired: {}&quot;</span><span class="s2">, </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">UnsupportedJwtException e</span><span class="s2">) {</span>
+            <span class="s1">logger</span><span class="s2">.</span><span class="s1">error</span><span class="s2">(</span><span class="s3">&quot;JWT token is unsupported: {}&quot;</span><span class="s2">, </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IllegalArgumentException e</span><span class="s2">) {</span>
+            <span class="s1">logger</span><span class="s2">.</span><span class="s1">error</span><span class="s2">(</span><span class="s3">&quot;JWT claims string is empty: {}&quot;</span><span class="s2">, </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+        <span class="s0">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
