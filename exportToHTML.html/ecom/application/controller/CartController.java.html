@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>CartController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CartController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">Cart</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">CartRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">CartRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">service</span><span class="s2">.</span><span class="s1">CartService</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">service</span><span class="s2">.</span><span class="s1">CartServiceImpl</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">AuthUtil</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpStatus</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseEntity</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.*;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+
+<span class="s1">@RestController</span>
+<span class="s1">@RequestMapping</span><span class="s2">(</span><span class="s3">&quot;/api&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">CartController </span><span class="s2">{</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">CartRepository cartRepository</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">CartServiceImpl cartService</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthUtil authUtil</span><span class="s2">;</span>
+
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s3">&quot;/carts/products/{productId}/quantity/{quantity}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">addProductToCart</span><span class="s2">(</span><span class="s1">@PathVariable Long productId</span><span class="s2">,</span>
+                                                        <span class="s1">@PathVariable Integer quantity</span><span class="s2">) {</span>
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">cartService</span><span class="s2">.</span><span class="s1">addProductToCart</span><span class="s2">(</span><span class="s1">productId</span><span class="s2">, </span><span class="s1">quantity</span><span class="s2">);</span>
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt;(</span><span class="s1">cartRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">CREATED</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/carts&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt;&gt; </span><span class="s1">getCarts</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">cartRequest </span><span class="s2">= </span><span class="s1">cartService</span><span class="s2">.</span><span class="s1">getAllCarts</span><span class="s2">();</span>
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt;&gt;(</span><span class="s1">cartRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">FOUND</span><span class="s2">);</span>
+
+    <span class="s2">}</span>
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/carts/users/cart&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">getCardById</span><span class="s2">() {</span>
+        <span class="s1">String emailId </span><span class="s2">= </span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInEmail</span><span class="s2">();</span>
+        <span class="s1">Cart cart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findCartByEmail</span><span class="s2">(</span><span class="s1">emailId</span><span class="s2">);</span>
+        <span class="s1">Long cartId </span><span class="s2">= </span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartId</span><span class="s2">();</span>
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">cartService</span><span class="s2">.</span><span class="s1">getCart</span><span class="s2">(</span><span class="s1">emailId</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">);</span>
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt;(</span><span class="s1">cartRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@PutMapping</span><span class="s2">(</span><span class="s3">&quot;/cart/products/{productId}/quantity/{operation}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">updateProduct</span><span class="s2">(</span><span class="s1">@PathVariable Long productId</span><span class="s2">,</span>
+                                                     <span class="s1">@PathVariable String operation</span><span class="s2">) {</span>
+
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">cartService</span><span class="s2">.</span><span class="s1">updateProductQuantityInCart</span><span class="s2">(</span><span class="s1">productId</span><span class="s2">, </span><span class="s1">operation</span>
+                <span class="s2">.</span><span class="s1">equalsIgnoreCase</span><span class="s2">(</span><span class="s3">&quot;delete&quot;</span><span class="s2">) ? -</span><span class="s4">1 </span><span class="s2">: </span><span class="s4">1</span><span class="s2">);</span>
+
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt;(</span><span class="s1">cartRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@DeleteMapping</span><span class="s2">(</span><span class="s3">&quot;/carts/{cartId}/product/{productId}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">deleteProductFromCart</span><span class="s2">(</span><span class="s1">@PathVariable Long cartId</span><span class="s2">,</span>
+                                                        <span class="s1">@PathVariable Long productId</span><span class="s2">) {</span>
+
+        <span class="s1">String status </span><span class="s2">= </span><span class="s1">cartService</span><span class="s2">.</span><span class="s1">deleteProductFromCart</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">);</span>
+
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt;(</span><span class="s1">status</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

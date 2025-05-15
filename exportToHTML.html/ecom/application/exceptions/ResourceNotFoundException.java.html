@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>ResourceNotFoundException.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ResourceNotFoundException.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">exceptions</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">ResourceNotFoundException </span><span class="s0">extends </span><span class="s1">RuntimeException </span><span class="s2">{</span>
+    <span class="s1">String resourceName</span><span class="s2">;</span>
+    <span class="s1">String field</span><span class="s2">;</span>
+    <span class="s1">String fieldName</span><span class="s2">;</span>
+    <span class="s1">Long fieldId</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">ResourceNotFoundException</span><span class="s2">() {</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s1">String resourceName</span><span class="s2">, </span><span class="s1">String field</span><span class="s2">, </span><span class="s1">String fieldName</span><span class="s2">) {</span>
+        <span class="s0">super</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s3">&quot;%s not found with %s: %s&quot;</span><span class="s2">, </span><span class="s1">resourceName</span><span class="s2">, </span><span class="s1">field</span><span class="s2">, </span><span class="s1">fieldName</span><span class="s2">));</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">resourceName </span><span class="s2">= </span><span class="s1">resourceName</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">field </span><span class="s2">= </span><span class="s1">field</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">fieldName </span><span class="s2">= </span><span class="s1">fieldName</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s1">String resourceName</span><span class="s2">, </span><span class="s1">String field</span><span class="s2">, </span><span class="s1">Long fieldId</span><span class="s2">) {</span>
+        <span class="s0">super</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s3">&quot;%s not found with %s: %d&quot;</span><span class="s2">, </span><span class="s1">resourceName</span><span class="s2">, </span><span class="s1">field</span><span class="s2">, </span><span class="s1">fieldId</span><span class="s2">));</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">resourceName </span><span class="s2">= </span><span class="s1">resourceName</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">field </span><span class="s2">= </span><span class="s1">field</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">fieldId </span><span class="s2">= </span><span class="s1">fieldId</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

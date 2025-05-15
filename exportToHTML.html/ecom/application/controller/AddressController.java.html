@@ -1,0 +1,110 @@
+<html>
+<head>
+<title>AddressController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+AddressController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">;</span>
+
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">User</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">AddressRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">AddressRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">services</span><span class="s2">.</span><span class="s1">UserDetailsServiceImpl</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">service</span><span class="s2">.</span><span class="s1">AddressServiceImpl</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">AuthUtil</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">jakarta</span><span class="s2">.</span><span class="s1">validation</span><span class="s2">.</span><span class="s1">Valid</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">HttpStatus</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">http</span><span class="s2">.</span><span class="s1">ResponseEntity</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.*;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+
+<span class="s1">@RestController</span>
+<span class="s1">@RequestMapping</span><span class="s2">(</span><span class="s3">&quot;/api&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">AddressController </span><span class="s2">{</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AddressServiceImpl addressService</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthUtil authUtil</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AddressRepository addressRepository</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">UserDetailsServiceImpl userDetailsServiceImpl</span><span class="s2">;</span>
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s3">&quot;/addresses&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt; </span><span class="s1">createAddress</span><span class="s2">(</span><span class="s1">@Valid @RequestBody AddressRequest addressRequest</span><span class="s2">) {</span>
+
+        <span class="s1">User user </span><span class="s2">= </span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInUser</span><span class="s2">();</span>
+        <span class="s1">AddressRequest createdAddressRequest </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">createAddress</span><span class="s2">(</span><span class="s1">addressRequest</span><span class="s2">, </span><span class="s1">user</span><span class="s2">);</span>
+
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">createdAddressRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">CREATED</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/addresses&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt;&gt; </span><span class="s1">getAllAddresses</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt; </span><span class="s1">addressRequests </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">getAllAddresses</span><span class="s2">();</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">addressRequests</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">NO_CONTENT</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt;&gt;(</span><span class="s1">addressRequests</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/addresses/{addressId}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt; </span><span class="s1">getAddressById</span><span class="s2">(</span><span class="s1">@PathVariable Long addressId</span><span class="s2">) {</span>
+        <span class="s1">AddressRequest addressRequest </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">getAddressById</span><span class="s2">(</span><span class="s1">addressId</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">addressRequest </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">NO_CONTENT</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">addressRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s3">&quot;/users/addresses&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt;&gt; </span><span class="s1">getAddressByUsers</span><span class="s2">() {</span>
+        <span class="s1">User user </span><span class="s2">= </span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInUser</span><span class="s2">();</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt; </span><span class="s1">addressRequest </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">getUserAddresses</span><span class="s2">(</span><span class="s1">user</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">addressRequest </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">NO_CONTENT</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">addressRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+
+    <span class="s1">@PutMapping</span><span class="s2">(</span><span class="s3">&quot;/addresses/{addressId}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">AddressRequest</span><span class="s2">&gt; </span><span class="s1">updateAddress</span><span class="s2">(</span><span class="s1">@PathVariable Long addressId</span><span class="s2">, </span><span class="s1">@Valid @RequestBody AddressRequest addressRequest</span><span class="s2">) {</span>
+        <span class="s1">AddressRequest addressUpdatedRequest </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">getAddressById</span><span class="s2">(</span><span class="s1">addressId</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">addressRequest </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">NO_CONTENT</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">addressService</span><span class="s2">.</span><span class="s1">updateAddress</span><span class="s2">(</span><span class="s1">addressId</span><span class="s2">, </span><span class="s1">addressRequest</span><span class="s2">);</span>
+            <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">addressRequest</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@DeleteMapping</span><span class="s2">(</span><span class="s3">&quot;/addresses/{addressId}&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">deleteAddress</span><span class="s2">(</span><span class="s1">@PathVariable Long addressId</span><span class="s2">) {</span>
+        <span class="s1">String status </span><span class="s2">= </span><span class="s1">addressService</span><span class="s2">.</span><span class="s1">deleteAddress</span><span class="s2">(</span><span class="s1">addressId</span><span class="s2">);</span>
+        <span class="s0">return new </span><span class="s1">ResponseEntity</span><span class="s2">&lt;&gt;(</span><span class="s1">status</span><span class="s2">, </span><span class="s1">HttpStatus</span><span class="s2">.</span><span class="s1">OK </span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>UserInfoResponse.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UserInfoResponse.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">security</span><span class="s2">.</span><span class="s1">response</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">UserInfoResponse </span><span class="s2">{</span>
+    <span class="s0">private </span><span class="s1">Long id</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String jwtToken</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String username</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">UserInfoResponse</span><span class="s2">(</span><span class="s1">Long id</span><span class="s2">, </span><span class="s1">String username</span><span class="s2">, </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles</span><span class="s2">, </span><span class="s1">String jwtToken</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">username </span><span class="s2">= </span><span class="s1">username</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">roles </span><span class="s2">= </span><span class="s1">roles</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">jwtToken </span><span class="s2">= </span><span class="s1">jwtToken</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">UserInfoResponse</span><span class="s2">(</span><span class="s1">Long id</span><span class="s2">, </span><span class="s1">String username</span><span class="s2">, </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">username </span><span class="s2">= </span><span class="s1">username</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">roles </span><span class="s2">= </span><span class="s1">roles</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Long getId</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setId</span><span class="s2">(</span><span class="s1">Long id</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String getJwtToken</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">jwtToken</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setJwtToken</span><span class="s2">(</span><span class="s1">String jwtToken</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">jwtToken </span><span class="s2">= </span><span class="s1">jwtToken</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String getUsername</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">username</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setUsername</span><span class="s2">(</span><span class="s1">String username</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">username </span><span class="s2">= </span><span class="s1">username</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">getRoles</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">roles</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setRoles</span><span class="s2">(</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">roles</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">roles </span><span class="s2">= </span><span class="s1">roles</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+</pre>
+</body>
+</html>

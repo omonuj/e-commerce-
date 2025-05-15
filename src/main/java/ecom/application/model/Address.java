@@ -46,8 +46,8 @@ public class Address {
     @Size(min = 6, message = "Zipcode name must be atleast 6 characters")
     private String zipCode;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

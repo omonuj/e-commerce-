@@ -1,0 +1,252 @@
+<html>
+<head>
+<title>CartServiceImpl.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CartServiceImpl.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">service</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">exceptions</span><span class="s2">.</span><span class="s1">APIException</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">exceptions</span><span class="s2">.</span><span class="s1">ResourceNotFoundException</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">Cart</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">CartItem</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">model</span><span class="s2">.</span><span class="s1">Product</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">CartRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">payload</span><span class="s2">.</span><span class="s1">ProductRequest</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">CartItemRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">CartRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">repositories</span><span class="s2">.</span><span class="s1">ProductRepository</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">ecom</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">AuthUtil</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">modelmapper</span><span class="s2">.</span><span class="s1">ModelMapper</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">factory</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Autowired</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">stereotype</span><span class="s2">.</span><span class="s1">Service</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">transaction</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">Transactional</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">.</span><span class="s1">Stream</span><span class="s2">;</span>
+
+<span class="s1">@Service</span>
+<span class="s0">public class </span><span class="s1">CartServiceImpl </span><span class="s0">implements </span><span class="s1">CartService </span><span class="s2">{</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">CartRepository cartRepository</span><span class="s2">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">AuthUtil authUtil</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">ProductRepository productRepository</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">CartItemRepository cartItemRepository</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">ModelMapper modelMapper</span><span class="s2">;</span>
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">ProductServiceImpl productServiceImpl</span><span class="s2">;</span>
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">CartRequest addProductToCart</span><span class="s2">(</span><span class="s1">Long productId</span><span class="s2">, </span><span class="s1">Integer quantity</span><span class="s2">) {</span>
+         <span class="s1">Cart cart </span><span class="s2">= </span><span class="s1">createCart</span><span class="s2">();</span>
+
+        <span class="s1">Product product </span><span class="s2">= </span><span class="s1">productRepository</span><span class="s2">.</span><span class="s1">findById</span><span class="s2">(</span><span class="s1">productId</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Product&quot;</span><span class="s2">, </span><span class="s3">&quot;productId&quot;</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">));</span>
+
+        <span class="s1">CartItem cartItem </span><span class="s2">= </span><span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">findCartItemByProductIdAndCartId</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartId</span><span class="s2">(), </span><span class="s1">productId</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cartItem </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Product&quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">() + </span><span class="s3">&quot; already exists in the cart&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() == </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">() + </span><span class="s3">&quot; is not available in the cart&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() &lt; </span><span class="s1">quantity</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Please, make and order of the &quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">()</span>
+                    <span class="s2">+ </span><span class="s3">&quot;less than or equal to the quantity &quot; </span><span class="s2">+  </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() + </span><span class="s3">&quot;.&quot; </span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">CartItem newCartItem </span><span class="s2">= </span><span class="s0">new </span><span class="s1">CartItem</span><span class="s2">();</span>
+        <span class="s1">newCartItem</span><span class="s2">.</span><span class="s1">setProduct</span><span class="s2">(</span><span class="s1">product</span><span class="s2">);</span>
+        <span class="s1">newCartItem</span><span class="s2">.</span><span class="s1">setCart</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">);</span>
+        <span class="s1">newCartItem</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">quantity</span><span class="s2">);</span>
+        <span class="s1">newCartItem</span><span class="s2">.</span><span class="s1">setDiscount</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getDiscount</span><span class="s2">());</span>
+        <span class="s1">newCartItem</span><span class="s2">.</span><span class="s1">setProductPrice</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">());</span>
+
+        <span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">newCartItem</span><span class="s2">);</span>
+
+        <span class="s1">product</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">());</span>
+
+        <span class="s1">cart</span><span class="s2">.</span><span class="s1">setTotalPrice</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getTotalPrice</span><span class="s2">() + (</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getSpecialPrice</span><span class="s2">() * </span><span class="s1">quantity</span><span class="s2">));</span>
+
+        <span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">);</span>
+
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">, </span><span class="s1">CartRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartItem</span><span class="s2">&gt;  </span><span class="s1">cartItems </span><span class="s2">= </span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartItems</span><span class="s2">();</span>
+
+        <span class="s1">Stream</span><span class="s2">&lt;</span><span class="s1">ProductRequest</span><span class="s2">&gt; </span><span class="s1">productRequestStream </span><span class="s2">= </span><span class="s1">cartItems</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item -&gt; </span><span class="s2">{</span>
+            <span class="s1">ProductRequest map </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(), </span><span class="s1">ProductRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+            <span class="s1">map</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">item</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">());</span>
+            <span class="s0">return </span><span class="s1">map</span><span class="s2">;</span>
+        <span class="s2">});</span>
+
+        <span class="s1">cartRequest</span><span class="s2">.</span><span class="s1">setProducts</span><span class="s2">(</span><span class="s1">productRequestStream</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">());</span>
+        <span class="s0">return </span><span class="s1">cartRequest</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">Cart createCart</span><span class="s2">() {</span>
+         <span class="s1">Cart userCart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findCartByEmail</span><span class="s2">(</span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInEmail</span><span class="s2">());</span>
+         <span class="s0">if </span><span class="s2">(</span><span class="s1">userCart </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+             <span class="s0">return </span><span class="s1">userCart</span><span class="s2">;</span>
+         <span class="s2">}</span>
+         <span class="s1">Cart cart </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Cart</span><span class="s2">();</span>
+         <span class="s1">cart</span><span class="s2">.</span><span class="s1">setTotalPrice</span><span class="s2">(</span><span class="s4">0.00</span><span class="s2">);</span>
+         <span class="s1">cart</span><span class="s2">.</span><span class="s1">setUser</span><span class="s2">(</span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInUser</span><span class="s2">());</span>
+         <span class="s1">Cart newCart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">);</span>
+
+         <span class="s0">return </span><span class="s1">newCart</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">getAllCarts</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">Cart</span><span class="s2">&gt; </span><span class="s1">carts </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findAll</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">carts</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;No cart found&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartRequest</span><span class="s2">&gt; </span><span class="s1">cartRequests </span><span class="s2">= </span><span class="s1">carts</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cart -&gt; </span><span class="s2">{</span>
+            <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">, </span><span class="s1">CartRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+
+
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">ProductRequest</span><span class="s2">&gt; </span><span class="s1">products </span><span class="s2">= </span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartItems</span><span class="s2">().</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cartItem -&gt; </span><span class="s2">{</span>
+                <span class="s1">ProductRequest productRequest </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(), </span><span class="s1">ProductRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+                <span class="s1">productRequest</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">());</span>
+                <span class="s0">return </span><span class="s1">productRequest</span><span class="s2">;</span>
+            <span class="s2">}).</span><span class="s1">toList</span><span class="s2">();</span>
+
+            <span class="s1">cartRequest</span><span class="s2">.</span><span class="s1">setProducts</span><span class="s2">(</span><span class="s1">products</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">cartRequest</span><span class="s2">;</span>
+        <span class="s2">}).</span><span class="s1">toList</span><span class="s2">();</span>
+        <span class="s0">return </span><span class="s1">cartRequests</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">CartRequest getCart</span><span class="s2">(</span><span class="s1">String emailId</span><span class="s2">, </span><span class="s1">Long cartId</span><span class="s2">) {</span>
+        <span class="s1">Cart cart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findCartByEmailAndCartId</span><span class="s2">(</span><span class="s1">emailId</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cart </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Cart&quot;</span><span class="s2">, </span><span class="s3">&quot;cartId&quot;</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">, </span><span class="s1">CartRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+        <span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartItems</span><span class="s2">().</span><span class="s1">forEach</span><span class="s2">(</span><span class="s1">c -&gt; c</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">().</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">c</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">()));</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">ProductRequest</span><span class="s2">&gt; </span><span class="s1">productRequests </span><span class="s2">= </span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartItems</span><span class="s2">().</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">p -&gt; modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">p</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(), </span><span class="s1">ProductRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">toList</span><span class="s2">();</span>
+
+        <span class="s1">cartRequest</span><span class="s2">.</span><span class="s1">setProducts</span><span class="s2">(</span><span class="s1">productRequests</span><span class="s2">);</span>
+        <span class="s0">return </span><span class="s1">cartRequest</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Transactional</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">CartRequest updateProductQuantityInCart</span><span class="s2">(</span><span class="s1">Long productId</span><span class="s2">, </span><span class="s1">Integer quantity</span><span class="s2">) {</span>
+
+        <span class="s1">String emailId </span><span class="s2">= </span><span class="s1">authUtil</span><span class="s2">.</span><span class="s1">loggedInEmail</span><span class="s2">();</span>
+        <span class="s1">Cart userCart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findCartByEmail</span><span class="s2">(</span><span class="s1">emailId</span><span class="s2">);</span>
+        <span class="s1">Long cartId </span><span class="s2">= </span><span class="s1">userCart</span><span class="s2">.</span><span class="s1">getCartId</span><span class="s2">();</span>
+
+        <span class="s1">Cart cart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findById</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Cart&quot;</span><span class="s2">, </span><span class="s3">&quot;cartId&quot;</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">));</span>
+
+        <span class="s1">Product product </span><span class="s2">= </span><span class="s1">productRepository</span><span class="s2">.</span><span class="s1">findById</span><span class="s2">(</span><span class="s1">productId</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Product&quot;</span><span class="s2">, </span><span class="s3">&quot;productId&quot;</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">));</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() == </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Product&quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">() + </span><span class="s3">&quot; is not available in the cart&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() &lt; </span><span class="s1">quantity</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Please, make an order of the&quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">() +</span>
+                    <span class="s3">&quot; less than or equal to the quantity &quot; </span><span class="s2">+  </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() + </span><span class="s3">&quot;.&quot; </span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">CartItem cartItem </span><span class="s2">= </span><span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">findCartItemByProductIdAndCartId</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cartItem </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Product&quot; </span><span class="s2">+ </span><span class="s1">product</span><span class="s2">.</span><span class="s1">getProductName</span><span class="s2">() + </span><span class="s3">&quot; is not available in the cart&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">int </span><span class="s1">newQuantity </span><span class="s2">= </span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() + </span><span class="s1">quantity</span><span class="s2">;</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">newQuantity </span><span class="s2">&lt; </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">APIException</span><span class="s2">(</span><span class="s3">&quot;Quantity can not be negative.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">newQuantity </span><span class="s2">== </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s1">deleteProductFromCart</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+
+            <span class="s1">cartItem</span><span class="s2">.</span><span class="s1">setProductPrice</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getPrice</span><span class="s2">());</span>
+            <span class="s1">cartItem</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() + </span><span class="s1">quantity</span><span class="s2">);</span>
+            <span class="s1">cartItem</span><span class="s2">.</span><span class="s1">setDiscount</span><span class="s2">(</span><span class="s1">product</span><span class="s2">.</span><span class="s1">getDiscount</span><span class="s2">());</span>
+            <span class="s1">cart</span><span class="s2">.</span><span class="s1">setTotalPrice</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getTotalPrice</span><span class="s2">() + (</span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getProductPrice</span><span class="s2">() * </span><span class="s1">quantity</span><span class="s2">));</span>
+            <span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">CartItem updatedCartItem </span><span class="s2">= </span><span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">save</span><span class="s2">(</span><span class="s1">cartItem</span><span class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">updatedCartItem</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">() == </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">deleteById</span><span class="s2">(</span><span class="s1">updatedCartItem</span><span class="s2">.</span><span class="s1">getCartItemId</span><span class="s2">());</span>
+        <span class="s2">}</span>
+
+        <span class="s1">CartRequest cartRequest </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">updatedCartItem</span><span class="s2">, </span><span class="s1">CartRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CartItem</span><span class="s2">&gt; </span><span class="s1">cartItems </span><span class="s2">= </span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getCartItems</span><span class="s2">();</span>
+
+        <span class="s1">Stream</span><span class="s2">&lt;</span><span class="s1">ProductRequest</span><span class="s2">&gt; </span><span class="s1">productRequestStream </span><span class="s2">= </span><span class="s1">cartItems</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item -&gt; </span><span class="s2">{</span>
+            <span class="s1">ProductRequest map </span><span class="s2">= </span><span class="s1">modelMapper</span><span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">item</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(), </span><span class="s1">ProductRequest</span><span class="s2">.</span><span class="s0">class</span><span class="s2">);</span>
+            <span class="s1">map</span><span class="s2">.</span><span class="s1">setQuantity</span><span class="s2">(</span><span class="s1">item</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">());</span>
+            <span class="s0">return </span><span class="s1">map</span><span class="s2">;</span>
+        <span class="s2">});</span>
+        <span class="s1">cartRequest</span><span class="s2">.</span><span class="s1">setProducts</span><span class="s2">(</span><span class="s1">productRequestStream</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">());</span>
+        <span class="s0">return </span><span class="s1">cartRequest</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">String deleteProductFromCart</span><span class="s2">(</span><span class="s1">Long cartId</span><span class="s2">, </span><span class="s1">Long productId</span><span class="s2">) {</span>
+
+        <span class="s1">Cart cart </span><span class="s2">= </span><span class="s1">cartRepository</span><span class="s2">.</span><span class="s1">findById</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">orElseThrow</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s0">new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Cart&quot;</span><span class="s2">, </span><span class="s3">&quot;cartId&quot;</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">));</span>
+
+        <span class="s1">CartItem cartItem </span><span class="s2">= </span><span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">findCartItemByProductIdAndCartId</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cartItem </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">ResourceNotFoundException</span><span class="s2">(</span><span class="s3">&quot;Cart&quot;</span><span class="s2">, </span><span class="s3">&quot;cartId&quot;</span><span class="s2">, </span><span class="s1">cartId</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">cart</span><span class="s2">.</span><span class="s1">setTotalPrice</span><span class="s2">(</span><span class="s1">cart</span><span class="s2">.</span><span class="s1">getTotalPrice</span><span class="s2">() - (</span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getProductPrice</span><span class="s2">()</span>
+                <span class="s2">* </span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getQuantity</span><span class="s2">()));</span>
+
+        <span class="s1">cartItemRepository</span><span class="s2">.</span><span class="s1">deleteCartItemByProductIdAndCartId</span><span class="s2">(</span><span class="s1">cartId</span><span class="s2">, </span><span class="s1">productId</span><span class="s2">);</span>
+
+
+        <span class="s0">return </span><span class="s3">&quot;Product&quot; </span><span class="s2">+ </span><span class="s1">cartItem</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">().</span><span class="s1">getProductName</span><span class="s2">() + </span><span class="s3">&quot; is deleted from cart!!!&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
